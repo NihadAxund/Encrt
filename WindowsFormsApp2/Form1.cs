@@ -19,7 +19,7 @@ namespace WindowsFormsApp2
     public partial class Form1 : Form
     {
         private bool Isok { get; set; } = false;
-        private Thread thread { get; set; }
+        private CancellationTokenSource cts { get; set; } = new CancellationTokenSource ();
         string path1 { get; set; }
         int password;
         public Form1()
@@ -37,7 +37,7 @@ namespace WindowsFormsApp2
 
 
 
-        private void FileWrite()
+        private void FileWrite(CancellationToken token)
         {
             Isok = true;
             password = Convert.ToInt32(To_label.Text);
@@ -48,12 +48,19 @@ namespace WindowsFormsApp2
                 progressBar1.Value++;
                 for (int i = 0; i < array.Length; i++)
                 {
-                    
+
+                  //  Thread.Sleep(1000);
+
                     writer.Write(xorIt(array[i]));
                     if (num >= i)
                     {
                         num += num;
                         progressBar1.Value++;
+                    }
+                    if (token.IsCancellationRequested)
+                    {
+                        MessageBox.Show("A");
+                        return;
                     }
 
                 }
@@ -66,7 +73,7 @@ namespace WindowsFormsApp2
         }
 
         
-        [Obsolete]
+       // [Obsolete]
         public void Btn_Click(object sender, EventArgs e)
         {
             if (sender is Button btn)
@@ -87,13 +94,30 @@ namespace WindowsFormsApp2
                     case "3":
                         if (Check())
                         {
-                            FileWrite();
-                        };
+
+                            using ( cts = new CancellationTokenSource())
+                            {
+                                ThreadPool.QueueUserWorkItem((O) =>
+                                {
+
+                                    try
+                                    {
+                                        FileWrite(cts.Token);
+                                    }
+                                    catch (Exception ex)
+                                    {
+
+                                        throw;
+                                    }
+
+                                });
+                            }
+                        }
                         break;
                     case "5":
                         if (Isok)
                         {
-
+                            cts.Cancel();
                         }
                         break;
                     default:
