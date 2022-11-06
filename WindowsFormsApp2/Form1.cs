@@ -39,6 +39,7 @@ namespace WindowsFormsApp2
 
         private void FileWrite()
         {
+            Isok = true;
             password = Convert.ToInt32(To_label.Text);
             var array = File.ReadAllText(path1);
             int num = array.Length / 100;
@@ -88,6 +89,12 @@ namespace WindowsFormsApp2
                         {
                             FileWrite();
                         };
+                        break;
+                    case "5":
+                        if (Isok)
+                        {
+
+                        }
                         break;
                     default:
                         break;
