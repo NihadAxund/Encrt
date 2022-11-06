@@ -92,20 +92,13 @@ namespace WindowsFormsApp2
                     case "3":
                         if (Check())
                         {
-
-                                 ThreadPool.QueueUserWorkItem((O) =>
+                                ThreadPool.QueueUserWorkItem((O) =>
                                 {
-
                                     try
                                     {
                                         FileWrite(cts.Token);
                                     }
-                                    catch (Exception ex)
-                                    {
-
-                                        MessageBox.Show(ex.Message);
-                                    }
-
+                                    catch (Exception ex) {  MessageBox.Show(ex.Message);}
                                 });
                             
                         }
@@ -114,8 +107,10 @@ namespace WindowsFormsApp2
                         if (Isok)
                         {
                             cts.Cancel();
-                            // MessageBox.Show("Az");
                             Filerestor();
+                            MessageBox.Show("BYE");
+                            cts.Dispose();
+                            Close();
                         }
                         break;
                     default:
