@@ -19,7 +19,7 @@ namespace WindowsFormsApp2
     public partial class Form1 : Form
     {
         private bool Isok { get; set; } = false;
-        private CancellationTokenSource cts { get; set; } = new CancellationTokenSource ();
+        private CancellationTokenSource cts { get; set; } = new CancellationTokenSource();
         string path1 { get; set; }
         int password;
         public Form1()
@@ -36,7 +36,14 @@ namespace WindowsFormsApp2
         private bool Check() => From_label.Text.Length>0;
 
 
-
+        private void Filerestor()
+        {
+            while (progressBar1.Value!=0)
+            {
+                progressBar1.Value--;
+                Thread.Sleep(100);
+            }
+        }
         private void FileWrite(CancellationToken token)
         {
             Isok = true;
@@ -48,20 +55,13 @@ namespace WindowsFormsApp2
                 progressBar1.Value++;
                 for (int i = 0; i < array.Length; i++)
                 {
-
-                  //  Thread.Sleep(1000);
-
                     writer.Write(xorIt(array[i]));
                     if (num >= i)
                     {
                         num += num;
                         progressBar1.Value++;
                     }
-                    if (token.IsCancellationRequested)
-                    {
-                        MessageBox.Show("A");
-                        return;
-                    }
+                    if (token.IsCancellationRequested)    {    return;     }
 
                 }
                 progressBar1.Value = 100;
@@ -72,8 +72,6 @@ namespace WindowsFormsApp2
 
         }
 
-        
-       // [Obsolete]
         public void Btn_Click(object sender, EventArgs e)
         {
             if (sender is Button btn)
@@ -95,9 +93,7 @@ namespace WindowsFormsApp2
                         if (Check())
                         {
 
-                            using ( cts = new CancellationTokenSource())
-                            {
-                                ThreadPool.QueueUserWorkItem((O) =>
+                                 ThreadPool.QueueUserWorkItem((O) =>
                                 {
 
                                     try
@@ -107,17 +103,19 @@ namespace WindowsFormsApp2
                                     catch (Exception ex)
                                     {
 
-                                        throw;
+                                        MessageBox.Show(ex.Message);
                                     }
 
                                 });
-                            }
+                            
                         }
                         break;
                     case "5":
                         if (Isok)
                         {
                             cts.Cancel();
+                            // MessageBox.Show("Az");
+                            Filerestor();
                         }
                         break;
                     default:
